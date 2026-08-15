@@ -123,11 +123,7 @@ The manuscript source is provided as a Quarto document in:
 
     quarto/manuscript.qmd
 
-The Quarto source can be used to reproduce the manuscript and its associated tables and figures.
-
-If Quarto is installed, the manuscript can be rendered using:
-
-    quarto render quarto/manuscript.qmd
+The Quarto source contains the manuscript text, tables, and figures associated with the empirical analysis.
 
 ## Citation
 
