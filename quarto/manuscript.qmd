@@ -232,7 +232,7 @@ Finally, the FD and FDE representations were compared in terms of cluster charac
 
 All analyses were conducted in R (version 4.6.1) using the packages dplyr, ggplot2, stats, cluster, rstatix, and effectsize. The overall empirical validation framework adopted in this study is summarized in @fig-framework.
 
-![Overview of the empirical validation framework.](C:/Users/ADMIN/bitmap.png){#fig-framework}
+![Overview of the empirical validation framework.](empirical_validation_framework.png){#fig-framework}
 
 # 4. Results
 
