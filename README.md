@@ -78,7 +78,7 @@ The individual scripts load the required packages using `library()`.
 
 ### 1. Download the Repository
 
-Download or clone this repository and extract it if necessary.
+Download this repository and extract it if necessary.
 
 ### 2. Prepare the Dataset
 
