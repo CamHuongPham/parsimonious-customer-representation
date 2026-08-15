@@ -73,7 +73,6 @@ source("code/02_behavioral_descriptors.R")
 source("code/07_customer_segmentation.R")
 ```
 
-
 ## Required packages
 
 Install the required R packages before running the analysis:
