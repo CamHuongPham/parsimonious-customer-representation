@@ -65,6 +65,15 @@ source("code/run_all.R")
 Each script can also be executed separately when inspecting specific analytical steps.  
 Run the scripts in sequential order to ensure that required objects generated in previous steps are available.
 
+Example:
+
+```r
+source("code/01_data_preprocessing.R")
+source("code/02_behavioral_descriptors.R")
+source("code/07_customer_segmentation.R")
+```
+
+
 ## Required packages
 
 Install the required R packages before running the analysis:
@@ -80,12 +89,4 @@ install.packages(c(
   "FSA",
   "knitr"
 ))
-```
-
-Example:
-
-```r
-source("code/01_data_preprocessing.R")
-source("code/02_behavioral_descriptors.R")
-source("code/07_customer_segmentation.R")
 ```
