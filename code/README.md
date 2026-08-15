@@ -65,6 +65,23 @@ source("code/run_all.R")
 Each script can also be executed separately when inspecting specific analytical steps.  
 Run the scripts in sequential order to ensure that required objects generated in previous steps are available.
 
+## Required packages
+
+Install the required R packages before running the analysis:
+
+```r
+install.packages(c(
+  "readxl",
+  "dplyr",
+  "here",
+  "ggplot2",
+  "patchwork",
+  "rstatix",
+  "FSA",
+  "knitr"
+))
+```
+
 Example:
 
 ```r
