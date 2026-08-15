@@ -1,0 +1,1221 @@
+---
+title: "A Parsimonious Three-Dimensional Representation of Customer Behavioral Variability"
+
+author:
+  - name: Cam H. Pham
+    affiliation: Can Tho University
+    email: camhuongpham.p@gmail.com
+
+affiliations:
+  - id: 1
+    name: Can Tho University, Can Tho, Vietnam
+
+format: pdf
+
+editor: visual
+---
+
+**Abstract**
+
+Customer analytics in electronic commerce increasingly relies on transaction-level purchase data to support customer segmentation, personalization, and customer relationship management. However, existing customer representations have become increasingly rich, while limited empirical evidence exists regarding which behavioral dimensions are fundamentally necessary to represent customer behavioral variability. This study investigates whether customer behavioral variability can be represented parsimoniously through three complementary behavioral dimensions—purchasing intensity, portfolio breadth, and purchasing allocation—operationalized as Frequency, Diversity, and Entropy. Using 805,620 valid transactions from the widely used Online Retail II dataset, the proposed representation was evaluated through descriptive and correlational analyses, customer segmentation, statistical validation, managerial validation using observed customer revenue, and comparison with a conventional Frequency–Diversity representation. The results identified three statistically distinct customer segments, with higher levels of behavioral variability consistently associated with higher observed customer revenue. Furthermore, incorporating Entropy strengthened revenue differentiation across customer segments beyond Frequency and Diversity alone, demonstrating that purchasing allocation captures complementary behavioral information not preserved by purchasing intensity and portfolio breadth. These findings demonstrate that customer behavioral variability can be represented parsimoniously while preserving economically meaningful behavioral differences, providing an interpretable and practical customer representation for customer analytics in electronic commerce.
+
+# 1. Introduction
+
+The rapid growth of electronic commerce has generated unprecedented volumes of transaction-level behavioral data, fundamentally changing how firms understand customer heterogeneity and support data-driven customer management. Rather than relying solely on demographic characteristics such as age, gender, or income, electronic commerce platforms increasingly leverage transactional records, browsing activities, product choices, clickstreams, and other digital interaction traces to infer customer behavior, enabling more effective customer segmentation, prediction, and personalization. As a result, behavioral data have become a key foundation for customer segmentation, personalization, customer value management, and other retail analytics applications (Erevelles et al., 2016; Wedel & Kannan, 2016; Theodorakopoulos & Theodoropoulou, 2024; Liu et al., 2026).
+
+As customer analytics has become increasingly behavior-driven, a fundamental challenge is how customer behavior should be represented. Before customers can be segmented or targeted, raw behavioral data must first be transformed into an analytical representation (Alves Gomes & Meisen, 2023; Peker & Kart, 2023). Customer representation therefore serves as the interface between observed customer behavior and downstream analytical models, determining which behavioral characteristics become observable and, ultimately, which customer differences can be identified and translated into managerial decisions (Alves Gomes & Meisen, 2023; Bengio et al., 2013). Consequently, the effectiveness of customer analytics depends not only on the availability of behavioral data but also on how customer behavior is represented. This issue is particularly important in electronic commerce, where customer representations underpin segmentation, recommendation, personalization, and customer relationship management.
+
+To construct customer representations, previous research has proposed a broad spectrum of behavioral descriptors and representation methods. In electronic commerce, traditional customer analytics primarily relies on interpretable behavioral descriptors, such as RFM measures, purchase frequency, recency, monetary value, and other manually specified behavioral indicators (Hughes, 1994; Tsai & Chiu, 2004; Fader et al., 2005; Buckinx & Van den Poel, 2005; Salminen et al., 2023). Beyond transaction-intensity descriptors, several studies have shown that the breadth of customers' purchasing portfolios, reflected by purchase or category diversity, captures complementary aspects of customer purchasing behavior and is associated with customer retention and broader cross-buying patterns (Park & Han, 2013; Reinartz et al., 2005). More recent studies extend customer representations through feature-engineered behavioral variables that capture richer patterns from transactional data (Peker & Kart, 2023; Ozcan, 2026) and latent representations learned from machine learning models that extract complex behavioral structures (Alves Gomes et al., 2025). Collectively, these developments have substantially expanded the ability of customer analytics to characterize behavioral heterogeneity.
+
+Despite these advances, the customer representation literature remains characterized by methodological diversity rather than cumulative evidence regarding what behavioral information customer representations should preserve. Existing studies have primarily focused on expanding representational richness by introducing additional behavioral descriptors, constructing increasingly sophisticated feature-engineered variables, or learning higher-dimensional latent representations from behavioral data. However, although customer representations continue to expand in richness, limited empirical evidence exists regarding which behavioral dimensions are fundamentally necessary to preserve customer behavioral variability for customer analytics. For applications concerned with customer heterogeneity, the essential question is not how many behavioral descriptors are included, but whether the representation preserves the behavioral variability that differentiates customers. Yet little empirical evidence identifies which complementary behavioral dimensions are sufficient to preserve customer behavioral variability.
+
+Viewing customer representation through the lens of behavioral variability, customer differences can be understood through several complementary dimensions of purchasing behavior. Transaction intensity captures variation in purchasing magnitude, purchase diversity reflects variation in the breadth of customers' purchasing portfolios, and behavioral dispersion describes variation in how purchasing activities are allocated across purchased products or categories. Among these dimensions, behavioral dispersion can be characterized using entropy-based measures derived from customer transaction histories (Guidotti et al., 2015), offering a complementary perspective to conventional measures of purchasing intensity and portfolio breadth. Nevertheless, whether behavioral dispersion, operationalized through entropy, provides incremental information beyond purchasing intensity and purchase diversity has rarely been examined from a customer representation perspective.
+
+To address this gap, this study evaluates a parsimonious three-dimensional representation of customer behavioral variability based on Frequency, Diversity, and Entropy using online retail transaction data. Specifically, the study addresses the following research questions:
+
+**RQ1.** To what extent can a parsimonious representation based on Frequency, Diversity, and Entropy adequately characterize customer behavioral variability?
+
+**RQ2.** Do the behavioral differences captured by this representation correspond to meaningful differences in customer economic value?
+
+**RQ3.** Does Entropy provide incremental managerial information beyond the conventional behavioral dimensions of Frequency and Diversity?
+
+Frequency represents purchasing intensity, Diversity captures the breadth of customers' purchasing portfolios, and Entropy characterizes the distribution of purchasing activities across purchased products. Using transaction-level purchase data from electronic commerce, this study evaluates whether these three complementary behavioral dimensions constitute a parsimonious and managerially meaningful representation of customer behavioral variability.
+
+# 2. Literature review
+
+## 2.1. Customer representation in behavioral customer analytics
+
+Customer representation refers to an analytical abstraction that encodes customer behavior into a structured form suitable for computational analysis and managerial interpretation. Rather than representing customer behavior itself, a customer representation defines how behavioral information is organized, quantified, and made available to downstream analytical tasks, including segmentation, prediction, recommendation, personalization, and customer value analysis. From a broader representation learning perspective, effective representations aim to retain relevant information from the original data while facilitating subsequent learning and inference (Bengio et al., 2013).
+
+The role of customer representation extends beyond data transformation, as it shapes how customer behavior becomes observable within analytical processes. Different representations may preserve different behavioral characteristics and therefore reveal different patterns from the same underlying customer data. Consequently, the choice of representation influences not only analytical outcomes but also how behavioral insights are interpreted and translated into managerial decisions (Wedel & Kannan, 2016; Verhoef et al., 2021).
+
+In behavioral customer analytics, customer representation serves as the analytical interface between customer data and downstream decision-making. Behavioral customer analytics therefore relies on representations that transform heterogeneous customer activities into structured analytical objects for identifying customer differences and supporting managerial decisions (Alves Gomes & Meisen, 2023). Accordingly, the usefulness of customer analytics depends not only on analytical techniques but also on the quality and characteristics of the underlying behavioral representation.
+
+Despite methodological differences, customer representations share a common objective: creating a compact abstraction that retains meaningful behavioral information while remaining suitable for analytical and managerial applications (Bengio et al., 2013; Verhoef et al., 2021). This objective can be achieved through different approaches to constructing customer representations, which are reviewed in the following section.
+
+## 2.2. Approaches to constructing customer representations
+
+Customer representations can be constructed through different approaches that vary in how behavioral information is extracted, transformed, and encoded. Existing research generally adopts three broad approaches: descriptor-based representations, feature-engineered representations, and learned representations. These approaches differ in their level of abstraction, representational complexity, and interpretability, reflecting alternative strategies for converting customer activities into analytical representations.
+
+### 2.2.1. Descriptor-based representations
+
+Descriptor-based representations encode customer behavior through a set of manually specified behavioral variables designed to summarize observable patterns of customer activity. Rather than learning behavioral structures directly from data, this approach relies on domain knowledge to identify behavioral dimensions considered relevant for customer analysis.
+
+The most influential example is the RFM framework, which represents customer behavior through recency, frequency, and monetary value, capturing when, how often, and how much customers purchase (Hughes, 1994; Fader et al., 2005). Beyond RFM, subsequent studies have extended descriptor-based representations by incorporating additional predefined behavioral variables derived from purchase histories, including product diversity, category-level purchasing patterns, and temporal purchasing characteristics, to provide a broader understanding of customer heterogeneity (Buckinx & Van den Poel, 2005; Verbeke et al., 2012).
+
+The primary advantage of descriptor-based representations lies in their interpretability and managerial accessibility. Because each descriptor corresponds to a specific behavioral meaning, these representations enable firms to identify customer differences and design targeted marketing strategies based on directly interpretable behavioral patterns (Wedel & Kannan, 2016; Verhoef et al., 2021). However, descriptor-based representations depend heavily on the behavioral dimensions selected by researchers and may have limited capacity to capture complex or less observable patterns embedded in customer activities.
+
+### 2.2.2. Feature-engineered representations
+
+Feature-engineered representations extend descriptor-based approaches by manually constructing additional behavioral variables from raw customer data through domain knowledge, statistical transformations, feature combinations, and other feature engineering procedures. Unlike descriptor-based representations, which rely on predefined behavioral variables, feature-engineered representations manually derive new behavioral variables that capture characteristics not directly observable from the original descriptors. Common examples include temporal features capturing purchasing trends and behavioral dynamics, sequence-based statistics describing customer trajectories, interaction variables capturing relationships among behavioral attributes, and other handcrafted measures designed to characterize customer behavior from multiple perspectives (Verbeke et al., 2012; Netzer et al., 2008; Peker & Kart, 2023).
+
+By expanding the feature space beyond directly observable indicators, feature-engineered representations enable researchers to capture heterogeneous behavioral patterns that may not be reflected in conventional descriptors (Verbeke et al., 2012; Peker & Kart, 2023). However, constructing such representations requires substantial domain expertise in selecting meaningful transformations and designing relevant behavioral features. Moreover, increasing feature complexity may reduce parsimony and make behavioral interpretations more challenging, creating a trade-off between representational richness and managerial interpretability (Verhoef et al., 2021).
+
+### 2.2.3. Learned representations
+
+Learned representations differ fundamentally from descriptor-based and feature-engineered approaches by automatically learning latent customer representations directly from data without manually specifying behavioral variables or feature transformations. Unlike descriptor-based and feature-engineered approaches, these methods do not require behavioral dimensions to be predefined; instead, they learn numerical representations that encode complex patterns from transactional histories, interaction behaviors, and other large-scale customer data.
+
+Representative approaches include customer embeddings, neural representations, autoencoders, and deep learning-based models that transform customer activities into latent vectors capturing underlying behavioral structures (Barkan & Koenigstein, 2016; Alves Gomes et al., 2025).
+
+By learning directly from data, these approaches can capture nonlinear relationships and high-dimensional behavioral patterns that may remain difficult to identify through manually constructed features (Barkan & Koenigstein, 2016). Consequently, learned representations offer greater representational capacity and often demonstrate strong predictive performance in customer analytics applications. However, latent dimensions generated by these models generally lack explicit behavioral meanings, reducing transparency and creating challenges for managerial interpretation and decision-making (Rudin, 2019; Molnar, 2025).
+
+**Summary**
+
+These three approaches reflect different trade-offs between representational richness and interpretability. Descriptor-based representations emphasize interpretability, feature-engineered representations increase descriptive capacity through handcrafted variables, whereas learned representations maximize representational flexibility through data-driven learning. Regardless of the construction strategy, customer representations ultimately seek to encode customer behavior into a set of behavioral dimensions suitable for downstream analytical tasks.
+
+## 2.3. Behavioral dimensions underlying customer representations
+
+### 2.3.1. Transaction-based behavioral descriptors
+
+Transaction-based behavioral descriptors constitute one of the earliest and most widely adopted forms of customer representation in electronic commerce customer analytics. Derived directly from transactional records, they summarize customers' purchasing activities and have long served as the foundation for customer evaluation, segmentation, and customer value analysis (Hughes, 1994; Fader et al., 2005; Kumar & Reinartz, 2018). As direct summaries of observable purchasing behavior, these descriptors remain among the most widely used behavioral variables in customer analytics.
+
+Customer purchasing behavior has traditionally been represented using the well-established RFM framework, which comprises three complementary behavioral descriptors: Recency, Frequency, and Monetary value. Recency measures how recently a customer has made a purchase, reflecting the freshness of the customer–firm relationship; Frequency captures how often purchases occur during a given observation period, representing purchasing intensity; and Monetary value measures customers' total or average expenditure, reflecting their economic contribution to the firm (Hughes, 1994; Fader et al., 2005). Together, these descriptors capture complementary aspects of purchasing behavior and constitute one of the earliest and most influential customer representations in marketing analytics.
+
+Despite its simplicity and managerial interpretability, the RFM framework captures only part of the behavioral information contained in customer purchasing activities. Customers with similar RFM profiles may nevertheless differ substantially in the diversity and dispersion of their purchasing activities, motivating the incorporation of additional behavioral dimensions into customer representations (Buckinx & Van den Poel, 2005; Verbeke et al., 2012).
+
+### 2.3.2. Purchase diversity
+
+Purchase diversity reflects the breadth of customers' purchasing portfolios by capturing the variety of products or product categories purchased over a given observation period. Unlike transaction-based behavioral descriptors, which primarily characterize how recently, how frequently, or how much customers purchase, purchase diversity focuses on what customers purchase and the breadth of their purchasing portfolios. As such, it provides complementary information about customers' purchasing preferences and consumption patterns beyond that captured by transaction-based behavioral descriptors.
+
+The literature has operationalized purchase diversity through several closely related behavioral descriptors, including product diversity, category diversity, assortment breadth, and cross-buying behavior. Although these measures differ in their specific definitions and levels of aggregation, they share the common objective of quantifying the breadth of customers' purchasing portfolios. Product diversity typically measures the number or variety of distinct products purchased, whereas category diversity captures the range of product categories represented in customers' purchase histories. Assortment breadth reflects the overall scope of customers' purchasing portfolios, while cross-buying behavior measures the extent to which customers purchase across multiple product categories or business lines (Buckinx & Van den Poel, 2005; Reinartz et al., 2005; Park & Han, 2013).
+
+An expanding body of research suggests that purchase diversity provides behavioral information that complements conventional transaction-based behavioral descriptors. Customers exhibiting similar purchase frequency or spending levels may nevertheless differ substantially in the diversity of their purchasing portfolios, reflecting differences in purchasing preferences, shopping needs, and consumption strategies (Park & Han, 2013). Consequently, purchase diversity has become an increasingly important behavioral dimension for characterizing customer heterogeneity and has been associated with customer retention, cross-buying opportunities, and customer lifetime value (Reinartz et al., 2005; Park & Han, 2013).
+
+### 2.3.3. Behavioral dispersion
+
+Behavioral dispersion characterizes how customers distribute their purchasing activities across the products or categories they purchase. Whereas transaction-based behavioral descriptors capture purchasing magnitude and purchase diversity reflects portfolio breadth, behavioral dispersion captures the distribution of purchasing activities within that portfolio, indicating whether purchases are concentrated on a limited subset of items or more evenly allocated across purchased products or categories.
+
+The literature most commonly operationalizes behavioral dispersion using entropy-based measures derived from customer transaction histories. Entropy quantifies the dispersion of purchasing activities by simultaneously accounting for both the number of purchased items and the relative distribution of transactions among them. Higher entropy indicates that purchasing activities are distributed more evenly across products or categories, whereas lower entropy reflects greater concentration on a limited subset of purchases (Guidotti et al., 2015). Compared with simple diversity measures, which primarily capture the breadth of purchased products or categories, entropy additionally incorporates the relative allocation of purchasing activity, providing a more comprehensive characterization of behavioral variability.
+
+Behavioral dispersion therefore complements both transaction-based descriptors and purchase diversity by capturing an aspect of customer behavior that is not explicitly represented by either purchasing magnitude or portfolio breadth. While transaction-based descriptors characterize how much customers purchase and purchase diversity describes what customers purchase, behavioral dispersion reflects how purchasing activities are distributed across customers' purchasing portfolios. Accordingly, entropy provides a useful descriptor for characterizing the distributional structure of customer behavior in behavioral customer analytics (Guidotti et al., 2015).
+
+## 2.4. Toward a parsimonious representation of customer behavioral variability
+
+The preceding review suggests that customer behavioral variability arises from multiple complementary dimensions of purchasing behavior rather than a single behavioral characteristic. Although existing research has introduced numerous behavioral descriptors and representation methods, these descriptors primarily capture different sources of variation in customer activities rather than equivalent aspects of behavior. Therefore, a parsimonious customer representation requires identifying the fundamental behavioral dimensions through which customers differ in their purchasing patterns.
+
+From this perspective, customer purchasing behavior can be characterized through three complementary dimensions: purchasing intensity, portfolio breadth, and purchasing allocation structure. Transaction intensity captures variation in customers' level of purchasing engagement by describing the extent of purchasing activity over time. Purchase diversity captures variation in portfolio breadth by describing the range of products or categories included in customers' purchase histories. Behavioral dispersion captures variation in purchasing allocation structure by describing whether customers concentrate their transactions on a limited subset of products or distribute them more evenly across purchased items or categories. Together, these dimensions represent distinct and complementary sources of customer behavioral variability. Collectively, they provide the behavioral information required by downstream customer analytics tasks while avoiding unnecessary representational complexity.
+
+Because the objective of this study is to represent customer behavioral variability rather than customer value or relationship status, Frequency was selected to represent purchasing intensity. In contrast, Recency primarily reflects relationship timing and Monetary value reflects customers' economic contribution. Although both are important for customer value analysis, they do not constitute fundamental dimensions of behavioral variability.
+
+Despite the growing diversity of customer representations, existing studies have predominantly emphasized increasing representational richness through additional behavioral descriptors, engineered features, or learned latent representations. However, greater representational complexity does not necessarily imply that additional behavioral dimensions provide unique or necessary information. Existing research has provided limited empirical evidence on whether a parsimonious set of complementary behavioral dimensions can preserve meaningful behavioral differentiation and managerial information without requiring further expansion of the representation. Consequently, it remains unclear which core behavioral dimensions are sufficient for constructing an informative yet parsimonious customer representation and whether additional behavioral dimensions provide incremental value beyond those already represented.
+
+Motivated by this gap, this study evaluates whether a parsimonious customer representation based on Frequency, Diversity, and Entropy is sufficient to preserve customer behavioral variability in electronic commerce. These three descriptors are selected because they operationalize the three complementary dimensions of behavioral variability identified in the preceding review. Specifically, Frequency represents variation in purchasing intensity, Diversity captures variation in portfolio breadth, and Entropy characterizes variation in purchasing allocation structure by measuring the distribution of purchasing activities across purchased products or categories. Rather than further increasing representational richness through additional descriptors, engineered features, or learned representations, this study investigates whether these three dimensions jointly provide a sufficient representation of customer behavioral variability in online retail transactions and, in particular, whether Entropy contributes incremental managerial information beyond the behavioral information already captured by Frequency and Diversity.
+
+# 3. Methodology
+
+## 3.1. Data source
+
+This study uses the Online Retail II dataset published by Daqing Chen on the UCI Machine Learning Repository (Chen, 2012). The dataset contains transactional records from a UK-based online retailer covering the period from 1 December 2009 to 9 December 2011, comprising 1,067,371 transaction records. Each transaction includes customer identifiers, invoice information, product identifiers, purchased quantities, unit prices, transaction dates, and country information.
+
+| Variable    | Description                                     |
+|-------------|-------------------------------------------------|
+| InvoiceNo   | Unique identifier assigned to each transaction. |
+| StockCode   | Product identifier.                             |
+| Description | Product name.                                   |
+| Quantity    | Quantity of products in the transaction.        |
+| InvoiceDate | Date and time of the transaction.               |
+| UnitPrice   | Unit price of the product (GBP).                |
+| Customer ID | Customer identifier.                            |
+| Country     | Country of the customer.                        |
+
+: Variables in the Online Retail II dataset
+
+Online Retail II is widely used as a benchmark dataset in customer analytics, retail data mining, and machine learning because it provides complete transaction-level purchase histories for individual customers. Since this study focuses on representing customer behavioral variability rather than analyzing temporal market trends, the completeness of customer transaction histories is more important than the recency of the observations.
+
+The dataset provides the transaction-level information required to construct the proposed behavioral variability representation and to compute customer revenue for managerial validation. Before constructing the behavioral representation, the raw transaction data were preprocessed to remove inappropriate observations and generate customer-level behavioral profiles. The preprocessing procedure is described in the following section.
+
+The variables included in the dataset are presented in @tbl-dataset.
+
+## 3.2. Data preprocessing
+
+The Online Retail II dataset is distributed across two worksheets corresponding to different time periods. The two worksheets were first merged into a single transaction dataset before preprocessing.
+
+Transactions with missing customer identifiers were removed because they could not be assigned to individual customer profiles. Transactions with non-positive purchase quantities (Quantity ≤ 0), which primarily represent product returns or order cancellations, were also excluded from the analysis.
+
+After preprocessing, the final dataset contained 805,620 valid transactions, which served as the basis for constructing customer-level behavioral profiles and all subsequent analyses.
+
+## 3.3. Construction of the behavioral variability representation
+
+The proposed behavioral variability representation consists of three complementary customer-level descriptors: Frequency, Diversity, and Entropy. All descriptors were computed from the preprocessed transaction dataset and aggregated at the customer level.
+
+### 3.3.1. Frequency
+
+Frequency was operationalized as the number of distinct purchase transactions completed by each customer. Because each InvoiceNo represents a unique purchase transaction, Frequency was calculated as the number of distinct invoices associated with each customer. This measure captures customers' purchasing intensity while avoiding multiple counting of products purchased within the same transaction.
+
+### 3.3.2. Diversity
+
+Diversity was operationalized as the number of distinct products purchased by each customer. Specifically, the measure was calculated as the number of unique StockCode values associated with each customer. Diversity reflects the breadth of customers' purchasing portfolios, with larger values indicating purchases distributed across a wider range of products.
+
+### 3.3.3. Entropy
+
+Behavioral entropy was calculated using the Shannon entropy of each customer's product purchase distribution (Shannon, 1948). For each customer, the purchase probability of product *i* was defined as
+
+$$p_i=\frac{n_i}{\sum_{j=1}^{k} n_j}$$
+
+where n_i denotes the number of purchases of product i, and k is the number of distinct purchased products. Behavioral entropy was then computed as
+
+$$H=-\sum_{i=1}^{k} p_i \log_{2}(p_i)$$
+
+Higher entropy indicates that purchasing activity is distributed more evenly across purchased products, whereas lower entropy indicates that purchases are concentrated on a relatively small subset of products.
+
+For each customer, the proposed behavioral variability representation is therefore defined as the three-dimensional vector (Frequency, Diversity, Entropy).
+
+## 3.4. Customer revenue calculation
+
+Customer revenue was computed by summing the value of all valid transactions associated with each customer, where transaction value equals Quantity × UnitPrice. The resulting customer-level revenue served as an external managerial outcome for validation in subsequent analyses.
+
+## 3.5. Empirical validation
+
+The proposed behavioral representation was evaluated through a sequence of empirical analyses designed to address the three research questions. The evaluation consisted of descriptive analysis, customer segmentation, behavioral differentiation, managerial validation, and a comparative assessment of the incremental contribution of Entropy. Together, these analyses examine whether the proposed representation adequately captures customer behavioral variability and provides managerially meaningful information.
+
+### 3.5.1. Descriptive analysis
+
+Descriptive analysis was conducted to characterize the distribution and variability of the proposed behavioral descriptors prior to customer segmentation and subsequent validation analyses. Summary statistics, including the mean, median, standard deviation, minimum, first quartile (Q1), third quartile (Q3), and maximum, were calculated for Frequency, Diversity, and Entropy. The distribution of each descriptor was further examined using histograms.
+
+To examine the degree of association among the three behavioral descriptors, Pearson correlation coefficients were calculated for all pairwise combinations of Frequency, Diversity, and Entropy. Scatterplots were used to visualize relationships between descriptors exhibiting relatively high correlations. This analysis provides an initial assessment of the extent to which the three descriptors reflect distinct or overlapping aspects of customer behavioral variability.
+
+### 3.5.2. Customer segmentation
+
+Customer segmentation was performed using the K-means clustering algorithm based on the three behavioral descriptors: Frequency, Diversity, and Entropy (MacQueen, 1967). Prior to clustering, all descriptors were standardized using Z-score normalization to eliminate differences in measurement scales and ensure equal contributions of each descriptor to the clustering process.
+
+The optimal number of clusters was determined using the Elbow method by examining the within-cluster sum of squares (WSS) across alternative values of *K* (Thorndike, 1953). The selected number of clusters corresponded to the elbow point, where further increases in *K* produced only marginal reductions in WSS.
+
+Following the selection of the optimal number of clusters, K-means clustering was performed using 25 random initializations (nstart = 25) to improve the stability of the clustering solution and reduce sensitivity to the initial cluster centroids.
+
+Customer segmentation was used as an empirical validation framework to examine whether the proposed behavioral representation preserves meaningful differences among customers. The resulting customer segments were characterized using the mean values of Frequency, Diversity, and Entropy to facilitate comparison of behavioral differences across clusters.
+
+### 3.5.3. Behavioral differentiation
+
+Behavioral differentiation was evaluated to determine whether the customer segments identified by K-means represented statistically distinct behavioral groups. Because the behavioral descriptors exhibited non-normal distributions, differences among clusters were assessed using the Kruskal–Wallis rank-sum test (Kruskal & Wallis, 1952).
+
+Separate Kruskal–Wallis tests were conducted for Frequency, Diversity, and Entropy. When the overall test was statistically significant, pairwise comparisons between clusters were performed using Dunn's post-hoc test with Holm-adjusted *p*-values to control for multiple comparisons (Dunn, 1964; Holm, 1979).
+
+To assess the magnitude of behavioral differences, eta-squared effect sizes based on the Kruskal–Wallis H statistic were calculated for each Kruskal–Wallis test (Tomczak & Tomczak, 2014). Together, these analyses evaluate whether the proposed behavioral representation produces customer segments that differ meaningfully across the three behavioral dimensions.
+
+### 3.5.4. Managerial validation {#sec-354}
+
+Managerial validation was conducted to examine whether the customer segments identified from the proposed behavioral representation corresponded to meaningful differences in customer economic value. Customer revenue was used as an external managerial outcome because it was not included in the construction of the behavioral representation.
+
+Differences in customer revenue across the identified segments were evaluated using the same non-parametric analytical procedure described above. Specifically, the Kruskal–Wallis rank-sum test was applied, followed by Dunn's post-hoc test with Holm-adjusted p-values when the overall test indicated statistically significant differences.
+
+To assess the practical significance of the observed differences, eta-squared effect sizes based on the Kruskal–Wallis H statistic were calculated for the Kruskal–Wallis test. Together, these analyses evaluate whether the behavioral groups identified by the proposed representation correspond to managerially meaningful differences in customer revenue.
+
+### 3.5.5. Incremental contribution of Entropy
+
+To evaluate the incremental contribution of Entropy, an alternative behavioral representation based solely on Frequency and Diversity (FD representation) was constructed and analyzed alongside the proposed Frequency–Diversity–Entropy (FDE) representation.
+
+Using the same standardized customer-level dataset, K-means clustering was applied to the FD representation following the same procedure described in Customer segmentation. The clustering configuration determined for the proposed FDE representation was subsequently applied to the FD representation, including the same number of clusters and 25 random initializations, thereby ensuring that any observed differences could be attributed to the inclusion of Entropy rather than differences in clustering settings.
+
+The managerial usefulness of the FD representation was evaluated using the same validation procedure described in Managerial validation. Customer revenue was compared across the resulting clusters using the Kruskal–Wallis test, followed by Dunn's post-hoc pairwise comparisons with Holm-adjusted p-values. Eta-squared effect size based on the Kruskal–Wallis H statistic was also reported to quantify the magnitude of revenue differentiation among clusters.
+
+Finally, the FD and FDE representations were compared in terms of cluster characteristics, revenue differentiation, statistical significance, and effect size. This comparison was used to assess whether incorporating Entropy provides additional managerial information beyond the conventional behavioral dimensions of Frequency and Diversity.
+
+All analyses were conducted in R (version 4.6.1) using the packages dplyr, ggplot2, stats, cluster, rstatix, and effectsize. The overall empirical validation framework adopted in this study is summarized in @fig-framework.
+
+![Overview of the empirical validation framework.](C:/Users/ADMIN/bitmap.png){#fig-framework}
+
+# 4. Results
+
+## 4.1. Characteristics of the proposed behavioral representation
+
+### 4.1.1. Distribution of the behavioral descriptors
+
+After data preprocessing and customer-level aggregation, the final dataset comprised 5,881 customers, each represented by the three proposed behavioral descriptors: Frequency, Diversity, and Entropy. Summary statistics for these descriptors are presented in @tbl-summary.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(readxl)
+library(dplyr)
+
+
+retail <- bind_rows(
+  read_excel("D:/online+retail+ii/online_retail_II.xlsx", sheet = "Year 2009-2010"),
+  read_excel("D:/online+retail+ii/online_retail_II.xlsx", sheet = "Year 2010-2011")
+)
+
+data_clean <- retail %>%
+  filter(
+    !is.na(`Customer ID`),
+    Quantity > 0
+  )
+
+freq_table <- data_clean %>%
+  group_by(`Customer ID`) %>%
+  summarise(
+    Frequency = n_distinct(Invoice),
+    .groups = "drop"
+  )
+
+diversity_table <- data_clean %>%
+  group_by(`Customer ID`) %>%
+  summarise(
+    Diversity = n_distinct(StockCode),
+    .groups = "drop"
+  )
+
+entropy_detail <- data_clean %>%
+  group_by(`Customer ID`, StockCode) %>%
+  summarise(
+    PurchaseCount = n(),
+    .groups = "drop"
+  ) %>%
+  group_by(`Customer ID`) %>%
+  mutate(
+    Probability = PurchaseCount / sum(PurchaseCount)
+  )
+
+entropy_table <- entropy_detail %>%
+  group_by(`Customer ID`) %>%
+  summarise(
+    Entropy = -sum(Probability * log2(Probability)),
+    .groups = "drop"
+  )
+
+customer_metrics <- freq_table %>%
+  inner_join(diversity_table, by = "Customer ID") %>%
+  inner_join(entropy_table, by = "Customer ID")
+
+summary_table <- data.frame(
+  Statistic = c(
+    "N",
+    "Mean",
+    "Median",
+    "Standard Deviation",
+    "Minimum",
+    "Q1 (25%)",
+    "Q3 (75%)",
+    "Maximum"
+  ),
+  Frequency = c(
+    nrow(customer_metrics),
+    mean(customer_metrics$Frequency),
+    median(customer_metrics$Frequency),
+    sd(customer_metrics$Frequency),
+    min(customer_metrics$Frequency),
+    quantile(customer_metrics$Frequency, 0.25),
+    quantile(customer_metrics$Frequency, 0.75),
+    max(customer_metrics$Frequency)
+  ),
+  Diversity = c(
+    nrow(customer_metrics),
+    mean(customer_metrics$Diversity),
+    median(customer_metrics$Diversity),
+    sd(customer_metrics$Diversity),
+    min(customer_metrics$Diversity),
+    quantile(customer_metrics$Diversity, 0.25),
+    quantile(customer_metrics$Diversity, 0.75),
+    max(customer_metrics$Diversity)
+  ),
+  Entropy = c(
+    nrow(customer_metrics),
+    mean(customer_metrics$Entropy),
+    median(customer_metrics$Entropy),
+    sd(customer_metrics$Entropy),
+    min(customer_metrics$Entropy),
+    quantile(customer_metrics$Entropy, 0.25),
+    quantile(customer_metrics$Entropy, 0.75),
+    max(customer_metrics$Entropy)
+  )
+)
+
+summary_table[, -1] <- round(summary_table[, -1], 2)
+
+summary_table[, -1] <- lapply(summary_table[, -1], function(x) sprintf("%.2f", x))
+
+summary_table[1, 2:4] <- lapply(summary_table[1, 2:4], function(x) sprintf("%.0f", as.numeric(x)))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-summary
+#| tbl-cap: "Descriptive statistics of customer behavioral metrics"
+
+knitr::kable(summary_table)
+```
+
+Substantial variation is observed across customers in all three behavioral descriptors. Frequency and Diversity exhibit pronounced positive skewness, as indicated by the large differences between their means and medians and the presence of extremely high maximum values. In contrast, Entropy displays a comparatively more balanced distribution while still exhibiting considerable variation across customers. Overall, these descriptive patterns indicate substantial heterogeneity in customer purchasing behavior. The empirical distributions of the three behavioral descriptors are examined below.
+
+**Distribution of Frequency**
+
+The distribution of Frequency is presented in @fig-fre.
+
+\clearpage
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-fre
+#| fig-cap: "Distribution of purchase frequency."
+#| fig-width: 5
+#| fig-height: 4
+
+library(ggplot2)
+
+ggplot(customer_metrics, aes(x = Frequency)) +
+  geom_histogram(
+    bins = 30,
+    fill = "steelblue"
+  ) +
+  labs(
+    x = "Purchase Frequency",
+    y = "Number of Customers"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+Most customers completed only a small number of purchase transactions, whereas relatively few customers exhibited substantially higher purchasing frequencies. As a result, the distribution is strongly right-skewed, with a long tail extending toward higher transaction frequencies.
+
+This distribution is consistent with the descriptive statistics reported previously, where the mean exceeds the median and a small number of customers account for exceptionally high purchase frequencies. These results indicate considerable heterogeneity in purchasing intensity, suggesting that transaction activity is concentrated among a relatively small subset of highly active customers.
+
+**Distribution of Diversity**
+
+@fig-div presents the distribution of Diversity.
+
+\clearpage
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-div
+#| fig-cap: "Distribution of product diversity."
+#| fig-width: 5
+#| fig-height: 4
+
+ggplot(customer_metrics, aes(x = Diversity)) +
+  geom_histogram(
+    bins = 30,
+    fill = "steelblue"
+  ) +
+  labs(
+    x = "Number of Unique Products Purchased",
+    y = "Number of Customers"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+Diversity also exhibits a right-skewed distribution, indicating substantial variation in the breadth of customers' purchasing portfolios. While most customers purchased a relatively limited range of distinct products, a small proportion purchased a much broader range of products.
+
+This pattern is consistent with the descriptive statistics reported previously, where the mean exceeds the median and the maximum value is substantially larger than that observed for most customers. These results indicate considerable heterogeneity in customers' purchasing breadth, with a minority of customers purchasing across substantially broader product portfolios than the majority.
+
+**Distribution of Entropy**
+
+The distribution of Entropy is illustrated in @fig-ent.
+
+\clearpage
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ent
+#| fig-cap: "Distribution of behavioral entropy."
+#| fig-width: 5
+#| fig-height: 4
+
+ggplot(customer_metrics, aes(x = Entropy)) +
+  geom_histogram(
+    bins = 30,
+    fill = "steelblue"
+  ) +
+  labs(
+    x = "Behavioral Entropy",
+    y = "Number of Customers"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+Compared with Frequency and Diversity, Entropy exhibits a less skewed distribution, with most observations concentrated around the middle of the observed range. Nevertheless, noticeable variation remains across customers, indicating differences in how purchasing activities are distributed among purchased products.
+
+Both low and high entropy values are observed. Lower entropy values correspond to customers whose purchases are concentrated on a relatively small subset of products, whereas higher entropy values indicate customers whose purchasing activities are distributed more evenly across their purchased products. The distribution indicates substantial variation in how customers allocate their purchasing activities across products, complementing the variation observed in purchasing intensity and purchasing breadth.
+
+### 4.1.2. Relationships among the behavioral descriptors
+
+Pearson correlation coefficients indicate that the three behavioral descriptors are positively associated, although the strength of these relationships differs across descriptor pairs, as shown in @tbl-cor.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-cor
+#| tbl-cap: "Pearson correlations among the behavioral descriptors."
+
+cor_table <- data.frame(
+  `Descriptor pair` = c(
+    "Frequency – Diversity",
+    "Frequency – Entropy",
+    "Diversity – Entropy"
+  ),
+  `Correlation coefficient (r)` = round(c(
+    cor(customer_metrics$Frequency,
+        customer_metrics$Diversity,
+        use = "complete.obs"),
+    cor(customer_metrics$Frequency,
+        customer_metrics$Entropy,
+        use = "complete.obs"),
+    cor(customer_metrics$Diversity,
+        customer_metrics$Entropy,
+        use = "complete.obs")
+  ), 2),
+  check.names = FALSE
+)
+
+knitr::kable(cor_table)
+```
+
+Both the Frequency–Diversity and Diversity–Entropy pairs exhibit relatively strong positive correlations (*r* = 0.69). This pattern indicates that customers who purchase more frequently tend to purchase a broader range of products, and that broader purchasing portfolios are generally associated with higher levels of purchasing dispersion.
+
+By contrast, the correlation between Frequency and Entropy is considerably weaker (*r* = 0.36). Although the relationship remains positive, its lower magnitude suggests that Frequency and Entropy capture more distinct aspects of customer behavior than either descriptor does with Diversity.
+
+The correlation structure indicates that the three behavioral descriptors are related but not redundant, suggesting that each captures a distinct aspect of customer behavioral variability. Diversity is relatively strongly associated with both Frequency and Entropy, whereas the weaker association between Frequency and Entropy suggests that these descriptors capture complementary aspects of customer behavioral variability.
+
+Following the correlation analysis, the two descriptor pairs exhibiting the strongest associations—Frequency–Diversity and Diversity–Entropy—were further examined using scatterplots, as shown in @fig-scatter. These visualizations provide a more detailed view of the relationships between the behavioral descriptors and complement the correlation analysis.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-scatter
+#| fig-cap: "Scatterplots of the relationships between behavioral descriptors. (A) Frequency – Diversity. (B) Diversity – Entropy."
+#| fig-width: 10
+#| fig-height: 5
+
+library(ggplot2)
+library(patchwork)
+
+p1 <- ggplot(customer_metrics, aes(x = Frequency, y = Diversity)) +
+  geom_point(alpha = 0.4, color = "steelblue") +
+  theme_minimal(base_size = 16) +
+  labs(x = "Frequency", y = "Diversity")
+
+p2 <- ggplot(customer_metrics, aes(x = Diversity, y = Entropy)) +
+  geom_point(alpha = 0.4, color = "orange") +
+  theme_minimal(base_size = 16) +
+  labs(x = "Diversity", y = "Entropy")
+
+(p1 + p2) +
+  plot_annotation(tag_levels = "A") &
+  theme(
+    plot.tag = element_text(face = "bold", size = 18),
+    plot.tag.position = c(0, 1)
+  )
+```
+
+For the Frequency–Diversity pair, the scatterplot shows a clear positive association (@fig-scatter A), consistent with the correlation coefficient reported previously. Customers with higher purchasing frequencies generally tend to purchase a broader range of products. Most observations are concentrated in the lower-left region of the figure, indicating that the majority of customers purchase infrequently and across a relatively limited product portfolio. A small number of observations extend toward substantially higher values of both descriptors, representing customers with exceptionally high purchasing intensity and product diversity. In addition, the dispersion of Diversity increases as Frequency becomes larger, suggesting greater heterogeneity among highly active customers.
+
+For the Diversity–Entropy pair, the scatterplot also reveals a positive relationship between the two descriptors (@fig-scatter B). Entropy increases rapidly at lower levels of product diversity, whereas the rate of increase becomes progressively smaller as Diversity continues to increase, producing a relationship that appears only partially linear. Compared with the Frequency–Diversity relationship, the observations form a relatively narrow band with fewer extreme values, indicating that the relationship between product diversity and purchasing allocation is relatively consistent across customers.
+
+## 4.2. Customer segmentation
+
+The Elbow method was first used to determine the appropriate number of customer segments. The within-cluster sum of squares (WSS) decreases rapidly as the number of clusters increases from one to three, after which the rate of improvement becomes substantially smaller. The elbow is observed at K = 3 (@fig-elbow), indicating that additional clusters provide only marginal reductions in within-cluster variation. Accordingly, a three-cluster solution was selected for subsequent customer segmentation.
+
+\clearpage
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-elbow
+#| fig-cap: "Elbow plot for determining the optimal number of clusters."
+#| fig-width: 6
+#| fig-height: 5
+
+cluster_data <- customer_metrics[, c("Frequency", "Diversity", "Entropy")]
+
+cluster_scaled <- scale(cluster_data)
+
+set.seed(123)
+
+wss <- numeric(10)
+
+for (k in 1:10) {
+  kmeans_model <- kmeans(
+    cluster_scaled,
+    centers = k,
+    nstart = 25
+  )
+  wss[k] <- kmeans_model$tot.withinss
+}
+
+plot(
+  1:10,
+  wss,
+  type = "b",
+  pch = 19,
+  frame = FALSE,
+  xlab = "Number of clusters (K)",
+  ylab = "Within-cluster sum of squares"
+)
+```
+
+Applying K-means with the selected three-cluster solution produced three distinct customer segments that differed consistently across Frequency, Diversity, and Entropy, as shown in @tbl-cluster-profile.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-cluster-profile
+#| tbl-cap: "Cluster profiles based on the proposed behavioral descriptors."
+
+set.seed(123)
+
+kmeans_final <- kmeans(cluster_scaled, centers = 3, nstart = 25)
+
+customer_metrics$Cluster <- factor(kmeans_final$cluster)
+
+cluster_profile <- aggregate(
+  customer_metrics[, c("Frequency", "Diversity", "Entropy")],
+  by = list(Cluster = customer_metrics$Cluster),
+  FUN = mean
+)
+
+cluster_profile[, 2:4] <- round(cluster_profile[, 2:4], 2)
+
+knitr::kable(cluster_profile)
+```
+
+Cluster 1 is characterized by the lowest levels of behavioral variability, with a mean Frequency of 2.46 transactions, a mean Diversity of 23.01 products, and a mean Entropy of 4.00. The distributions of all three descriptors are concentrated at the lower end of their respective ranges, with relatively limited dispersion and few extreme observations. This cluster therefore represents customers with infrequent purchases, narrow purchasing portfolios, and relatively concentrated purchasing patterns.
+
+Cluster 3 represents an intermediate level of behavioral variability. Customers in this cluster recorded an average Frequency of 8.42 transactions, a Diversity of 134.37 products, and an Entropy of 6.69. Compared with Cluster 1, the distributions of Frequency and Diversity are more dispersed, while Entropy also increases substantially. These results indicate broader purchasing portfolios and more evenly distributed purchasing activities than those observed in Cluster 1.
+
+Cluster 2 exhibits the highest levels of behavioral variability across all three descriptors, with a mean Frequency of 52.31 transactions, a mean Diversity of 497.00 products, and a mean Entropy of 8.24. This cluster displays the widest distributions and contains most of the extreme observations, particularly for Frequency and Diversity. Customers in this group purchase substantially more frequently, across a much broader range of products, and allocate their purchasing activities more evenly than customers in the other two clusters.
+
+Taken together, the three clusters reveal a clear behavioral gradient, ranging from customers with limited purchasing activity and concentrated purchasing patterns to customers exhibiting substantially higher purchasing intensity, broader purchasing portfolios, and more evenly distributed purchasing behavior.
+
+The proportions of customers in each cluster are summarized in @tbl-cluster-proportion.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-cluster-proportion
+#| tbl-cap: "Proportion of customers across clusters."
+
+cluster_prop <- data.frame(
+  Cluster = paste("Cluster", levels(customer_metrics$Cluster)),
+  `Customer proportion` = paste0(
+    sprintf(
+      "%.2f",
+      prop.table(table(customer_metrics$Cluster)) * 100
+    ),
+    "%"
+  ),
+  check.names = FALSE
+)
+
+knitr::kable(
+  cluster_prop,
+  align = c("l", "r")
+)
+```
+
+The identified clusters varied substantially in size. Cluster 1 contained 56.04% of customers, followed by Cluster 3 with 41.20%, whereas Cluster 2 accounted for only 2.75% of the customer population. Accordingly, most customers belonged to the low- and moderate-variability segments, while only a relatively small proportion exhibited the high levels of behavioral variability represented by Cluster 2.
+
+## 4.3. Behavioral differences across customer segments
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-kruskal
+#| tbl-cap: "Kruskal–Wallis test results for behavioral differentiation across customer segments."
+
+library(dplyr)
+library(rstatix)
+library(knitr)
+
+# Kruskal–Wallis tests
+kw_frequency <- kruskal.test(Frequency ~ Cluster, data = customer_metrics)
+kw_diversity <- kruskal.test(Diversity ~ Cluster, data = customer_metrics)
+kw_entropy   <- kruskal.test(Entropy ~ Cluster, data = customer_metrics)
+
+# Effect sizes
+eps_frequency <- kruskal_effsize(customer_metrics, Frequency ~ Cluster)
+eps_diversity <- kruskal_effsize(customer_metrics, Diversity ~ Cluster)
+eps_entropy   <- kruskal_effsize(customer_metrics, Entropy ~ Cluster)
+
+# Final table
+kruskal_table <- data.frame(
+  `Behavioral descriptor` = c("Frequency", "Diversity", "Entropy"),
+  `Kruskal–Wallis $\\chi^2$` = round(c(
+    kw_frequency$statistic,
+    kw_diversity$statistic,
+    kw_entropy$statistic
+  ), 2),
+  df = c(
+    kw_frequency$parameter,
+    kw_diversity$parameter,
+    kw_entropy$parameter
+  ),
+  `p-value` = ifelse(
+    c(
+      kw_frequency$p.value,
+      kw_diversity$p.value,
+      kw_entropy$p.value
+    ) < 0.001,
+    "< 0.001",
+    sprintf("%.3f",
+            c(
+              kw_frequency$p.value,
+              kw_diversity$p.value,
+              kw_entropy$p.value
+            ))
+  ),
+  `$\\eta_H^2$` = round(c(
+    eps_frequency$effsize,
+    eps_diversity$effsize,
+    eps_entropy$effsize
+  ), 3),
+  `Effect size` = c(
+    eps_frequency$magnitude,
+    eps_diversity$magnitude,
+    eps_entropy$magnitude
+  ),
+  check.names = FALSE
+)
+
+knitr::kable(
+  kruskal_table,
+  align = c("l", "r", "r", "r", "r", "l")
+)
+```
+
+**Note.** $\eta_H^2$ denotes the eta-squared effect size based on the Kruskal–Wallis H statistic.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-dunn
+#| tbl-cap: "Dunn's post-hoc pairwise comparisons."
+
+library(dplyr)
+library(FSA)
+library(knitr)
+
+dunn_frequency <- dunnTest(
+  Frequency ~ Cluster,
+  data = customer_metrics,
+  method = "holm"
+)$res %>%
+  mutate(`Behavioral descriptor` = "Frequency")
+
+dunn_diversity <- dunnTest(
+  Diversity ~ Cluster,
+  data = customer_metrics,
+  method = "holm"
+)$res %>%
+  mutate(`Behavioral descriptor` = "Diversity")
+
+dunn_entropy <- dunnTest(
+  Entropy ~ Cluster,
+  data = customer_metrics,
+  method = "holm"
+)$res %>%
+  mutate(`Behavioral descriptor` = "Entropy")
+
+dunn_table <- bind_rows(
+  dunn_frequency,
+  dunn_diversity,
+  dunn_entropy
+) %>%
+  transmute(
+    `Behavioral descriptor`,
+    `Cluster comparison` = gsub(
+  "(\\d+) - (\\d+)",
+  "Cluster \\1 – Cluster \\2",
+  Comparison
+),
+    `Z statistic` = round(Z, 2),
+    `Adjusted p-value` = ifelse(P.adj < 0.001,
+                                "< 0.001",
+                                sprintf("%.3f", P.adj))
+  )
+
+knitr::kable(
+  dunn_table,
+  align = c("l", "l", "r", "r")
+)
+```
+
+**Note.** Adjusted $p$-values were computed using Holm's correction for multiple comparisons.
+
+To characterize the extent of behavioral differentiation among the customer segments identified using the proposed behavioral representation, Kruskal–Wallis rank-sum tests were conducted for Frequency, Diversity, and Entropy. The results are summarized in @tbl-kruskal.
+
+The Kruskal–Wallis tests revealed statistically significant differences among the three customer segments for all behavioral descriptors (all p < 0.001), indicating substantial between-cluster differentiation across Frequency, Diversity, and Entropy.
+
+The magnitude of these differences was consistently large. Frequency exhibited a large effect size ($\eta_H^2$ = 0.463), while Diversity ($\eta_H^2$ = 0.748) and Entropy ($\eta_H^2$ = 0.740) exhibited even stronger effects. The larger effect sizes for Diversity and Entropy indicate that purchasing breadth and purchasing allocation contribute more strongly to the observed differentiation among customer segments than purchasing frequency alone.
+
+Pairwise comparisons using Dunn's post-hoc test with Holm-adjusted p-values showed that every pair of customer segments differed significantly across all three behavioral descriptors (all adjusted p < 0.001; @tbl-dunn). Thus, the observed differentiation was evident across all pairwise cluster comparisons rather than being driven by differences involving only a single segment.
+
+The effect size results are also consistent with the cluster profiles reported in Table 4. Across all three behavioral descriptors, values increase progressively from the low-variability segment (Cluster 1) to the moderate-variability segment (Cluster 3) and finally to the high-variability segment (Cluster 2). Together with the pairwise comparison results, this consistent pattern indicates that the proposed representation captures systematic differences in purchasing intensity, purchasing breadth, and purchasing allocation across customer segments.
+
+Overall, the results demonstrate substantial and consistent behavioral differentiation among the customer segments identified using Frequency, Diversity, and Entropy. The large effect sizes and consistent pairwise separation further characterize the distinct behavioral profiles produced by the three-dimensional representation, providing a basis for subsequent managerial evaluation.
+
+## 4.4. Managerial validation
+### 4.4.1. Customer revenue across behavioral segments
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-revenue
+#| tbl-cap: "Customer revenue across behavioral segments."
+
+library(dplyr)
+library(knitr)
+
+data_clean <- data_clean %>%
+  mutate(Revenue = Quantity * Price)
+
+customer_revenue <- data_clean %>%
+  group_by(`Customer ID`) %>%
+  summarise(
+    Total_Revenue = sum(Revenue, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+customer_metrics <- customer_metrics %>%
+  left_join(customer_revenue, by = "Customer ID")
+
+
+revenue_table <- customer_metrics %>%
+  group_by(Cluster) %>%
+  summarise(
+    Mean = round(mean(Total_Revenue), 0),
+    Median = round(median(Total_Revenue), 0),
+    SD = round(sd(Total_Revenue), 0),
+    Min = round(min(Total_Revenue), 0),
+    Max = round(max(Total_Revenue), 0),
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Cluster = paste("Cluster", Cluster),
+    across(
+      c(Mean, Median, SD, Min, Max, n),
+      ~ format(.x, big.mark = ",", scientific = FALSE)
+    )
+  )
+
+knitr::kable(
+  revenue_table,
+  align = c("l", "r", "r", "r", "r", "r", "r")
+)
+```
+
+To evaluate the managerial usefulness of the proposed behavioral representation, customer revenue was examined across the identified behavioral segments (@tbl-revenue). A clear ordering emerged, with average revenue increasing from Cluster 1 to Cluster 3 and reaching its highest level in Cluster 2. Customers assigned to Cluster 2 generated an average revenue of 37,883, which was more than ten times higher than that of Cluster 3 (3,536) and more than forty times higher than that of Cluster 1 (922). Median revenue followed the same ordering, indicating that the differences among segments were not driven solely by a small number of exceptionally high-spending customers.
+
+Revenue variability also increased markedly across segments. Cluster 2 exhibited the largest standard deviation and the widest revenue range, suggesting that although this segment contains the retailer's most valuable customers on average, substantial heterogeneity still exists within this high-value group. By contrast, Cluster 1 displayed both the lowest average revenue and the lowest median revenue, indicating that customers with low behavioral variability also contributed the least economic value.
+
+These descriptive results suggest a positive association between behavioral variability and customer economic value. Segments characterized by higher purchasing intensity, broader purchasing portfolios, and more evenly distributed purchasing behavior also tended to generate substantially higher revenue. The statistical significance of these revenue differences is formally evaluated in the following section.
+
+### 4.4.2. Revenue differentiation across behavioral segments
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-revenue-kruskal
+#| tbl-cap: "Kruskal–Wallis test for customer revenue across behavioral segments."
+
+library(rstatix)
+library(knitr)
+
+kw <- kruskal_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster
+)
+
+
+effect <- kruskal_effsize(
+  customer_metrics,
+  Total_Revenue ~ Cluster
+)
+
+revenue_kw_table <- data.frame(
+  Variable = "Total revenue",
+  `Kruskal-Wallis $\\chi^2$` = round(kw$statistic, 0),
+  df = kw$df,
+  `p-value` = ifelse(
+    kw$p < 0.001,
+    "< 0.001",
+    sprintf("%.3f", kw$p)
+  ),
+  `$\\eta_H^2$` = round(effect$effsize, 3),
+  `Effect size` = effect$magnitude,
+  check.names = FALSE
+)
+
+knitr::kable(
+  revenue_kw_table,
+  row.names = FALSE,
+  booktabs = TRUE,
+  align = c("l", "r", "r", "r", "r", "l")
+)
+```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-revenue-dunn
+#| tbl-cap: "Dunn's post-hoc pairwise comparisons for customer revenue."
+
+library(dplyr)
+library(rstatix)
+library(knitr)
+
+posthoc <- dunn_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster,
+  p.adjust.method = "holm"
+)
+
+revenue_dunn_table <- posthoc %>%
+  transmute(
+    `Cluster comparison` = paste(
+      "Cluster", group1,
+      "–",
+      "Cluster", group2
+    ),
+    `Z statistic` = round(statistic, 2),
+    `Adjusted p-value` = ifelse(
+      p.adj < 0.001,
+      "< 0.001",
+      sprintf("%.3f", p.adj)
+    )
+  )
+
+knitr::kable(
+  revenue_dunn_table,
+  align = c("l", "r", "r")
+)
+```
+
+To examine whether the observed revenue differences among the three behavioral segments were statistically significant, a Kruskal–Wallis rank-sum test was conducted. As reported in @tbl-revenue-kruskal, customer revenue differed significantly across the three behavioral segments ($\\chi^2$ = 2862, df = 2, p < 0.001). The corresponding effect size was large ($\\eta_H^2$ = 0.487), indicating that the behavioral segmentation explains a substantial proportion of the variation in customer revenue.
+
+To further identify which customer segments differed from one another, Dunn's post-hoc pairwise comparisons with Holm-adjusted p-values were performed. As shown in @tbl-revenue-dunn, all three pairwise comparisons were statistically significant (all adjusted p < 0.001). Specifically, Cluster 2 differed significantly from both Cluster 1 and Cluster 3, while Cluster 1 and Cluster 3 also exhibited significant revenue differences.
+
+The behavioral segments derived from the proposed Frequency–Diversity–Entropy representation correspond to significantly different levels of customer revenue. The consistent increase in revenue from Cluster 1 to Cluster 3 and subsequently to Cluster 2 indicates that greater behavioral variability is associated with higher customer economic value. Accordingly, the proposed behavioral representation not only differentiates customer behavior but also distinguishes customer groups with substantially different economic value, supporting its managerial relevance.
+
+## 4.5. Incremental value of Entropy in customer segmentation
+
+To evaluate the incremental value of Entropy, customer segmentation was repeated using only Frequency and Diversity. The same number of clusters (K = 3) was retained to ensure a fair comparison between the baseline (FD) representation and the proposed Frequency–Diversity–Entropy (FDE) representation. Subsequent analyses focused on comparing their ability to differentiate customer revenue.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-fd-fde
+#| tbl-cap: "Comparison of revenue differentiation between the Frequency–Diversity (FD) and Frequency–Diversity–Entropy (FDE) representations."
+
+library(dplyr)
+library(rstatix)
+library(knitr)
+
+
+cluster_data_FD <- customer_metrics[, c("Frequency", "Diversity")]
+
+cluster_scaled_FD <- scale(cluster_data_FD)
+
+set.seed(123)
+
+kmeans_FD <- kmeans(
+  cluster_scaled_FD,
+  centers = 3,
+  nstart = 25
+)
+
+customer_metrics$Cluster_FD <- as.factor(kmeans_FD$cluster)
+
+kw_FD <- kruskal_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster_FD
+)
+
+effect_FD <- kruskal_effsize(
+  customer_metrics,
+  Total_Revenue ~ Cluster_FD
+)
+
+kw <- kruskal_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster
+)
+
+effect <- kruskal_effsize(
+  customer_metrics,
+  Total_Revenue ~ Cluster
+)
+
+
+comparison_table <- data.frame(
+  Representation = c("FD", "FDE"),
+  `Kruskal-Wallis $\\chi^2$` = c(
+    round(kw_FD$statistic, 0),
+    round(kw$statistic, 0)
+  ),
+  df = c(
+    kw_FD$df,
+    kw$df
+  ),
+  `p-value` = c(
+    ifelse(
+      kw_FD$p < 0.001,
+      "< 0.001",
+      sprintf("%.3f", kw_FD$p)
+    ),
+    ifelse(
+      kw$p < 0.001,
+      "< 0.001",
+      sprintf("%.3f", kw$p)
+    )
+  ),
+  `$\\eta_H^2$` = c(
+    round(effect_FD$effsize, 3),
+    round(effect$effsize, 3)
+  ),
+  `Effect size` = c(
+    effect_FD$magnitude,
+    effect$magnitude
+  ),
+  check.names = FALSE
+)
+
+knitr::kable(
+  comparison_table,
+  row.names = FALSE,
+  booktabs = TRUE,
+  align = c("l", "r", "r", "r", "r", "l")
+)
+```
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-fd-fde-dunn
+#| tbl-cap: "Dunn's post-hoc pairwise comparisons of customer revenue."
+
+library(dplyr)
+library(rstatix)
+library(knitr)
+
+
+posthoc_FD <- dunn_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster_FD,
+  p.adjust.method = "holm"
+)
+
+
+posthoc_FDE <- dunn_test(
+  customer_metrics,
+  Total_Revenue ~ Cluster,
+  p.adjust.method = "holm"
+)
+
+
+comparison_dunn <- bind_rows(
+  posthoc_FD %>%
+    mutate(Representation = "FD"),
+  posthoc_FDE %>%
+    mutate(Representation = "FDE")
+) %>%
+  transmute(
+    Representation,
+    `Cluster comparison` = paste(
+      "Cluster", group1,
+      "–",
+      "Cluster", group2
+    ),
+    `Z statistic` = round(statistic, 2),
+    `Adjusted p-value` = ifelse(
+      p.adj < 0.001,
+      "< 0.001",
+      sprintf("%.3f", p.adj)
+    )
+  )
+
+knitr::kable(
+  comparison_dunn,
+  row.names = FALSE,
+  booktabs = TRUE,
+  align = c("l", "l", "r", "r")
+)
+```
+
+The comparison indicates that incorporating Entropy improves the ability of the behavioral representation to differentiate customer economic value. As shown in @tbl-fd-fde, both the FD and FDE representations produced statistically significant differences in customer revenue across the identified segments (both p < 0.001). However, the magnitude of revenue differentiation was considerably stronger for the proposed FDE representation. The Kruskal–Wallis statistic increased from 1,729 for the FD representation to 2,862 after Entropy was incorporated, while the corresponding effect size increased from $\\eta_H^2$ = 0.294 to $\\eta_H^2$ = 0.487. This corresponds to an increase of approximately 66% in explained between-segment variation. Although both representations yielded large effect sizes, the substantially larger $\varepsilon^2$ obtained by the FDE representation indicates that incorporating Entropy improves the separation of customer segments with respect to economic value.
+
+The pairwise comparisons provide further evidence of this improvement (@tbl-fd-fde-dunn). Under the FD representation, customer revenue did not differ significantly between Cluster 1 and Cluster 2 (adjusted p = 0.131), indicating that segmentation based solely on purchasing intensity and purchasing breadth was unable to distinguish these two groups in terms of revenue. In contrast, all pairwise comparisons became statistically significant under the proposed FDE representation (all adjusted p < 0.001), demonstrating that the inclusion of Entropy enabled clearer differentiation among all three customer segments.
+
+Taken together, these findings indicate that Entropy contributes information beyond that captured by Frequency and Diversity. By representing how purchasing activities are distributed across products, Entropy provides complementary behavioral information that enables stronger differentiation of customer economic value. This evidence supports the incremental value of incorporating Entropy into parsimonious behavioral customer representations.
+
+Overall, the results demonstrate that the proposed Frequency–Diversity–Entropy representation not only captures meaningful behavioral heterogeneity but also produces customer segments that are more strongly associated with customer economic value than a conventional Frequency–Diversity representation.
+
+# 5. Discussion
+## 5.1. A parsimonious representation of customer behavioral variability
+
+The findings provide empirical evidence that customer behavioral variability can be adequately represented using three complementary behavioral descriptors: Frequency, Diversity, and Entropy. Together, these descriptors preserve differences in purchasing intensity, purchasing breadth, and purchasing allocation, demonstrating that meaningful behavioral heterogeneity can be captured without relying on a large number of behavioral variables or highly complex representations.
+
+The adequacy of the proposed representation stems from the complementary nature of the three behavioral dimensions rather than from the individual predictive strength of any single descriptor. Although the descriptors are positively correlated, they capture different aspects of purchasing behavior, allowing customers with similar purchasing intensity to differ in portfolio breadth or purchasing allocation. This complementarity explains why the three-dimensional representation produces well-defined behavioral segments while remaining parsimonious and interpretable. This finding contrasts with the broader tendency in electronic commerce customer analytics to expand representational richness through additional handcrafted variables or increasingly sophisticated latent representations (Peker & Kart, 2023; Alves Gomes et al., 2025). Instead, the present results suggest that preserving complementary behavioral dimensions may be more important than expanding the number of behavioral descriptors.
+
+Taken together, these findings suggest that parsimony should be achieved by preserving complementary behavioral dimensions rather than by repeatedly measuring similar aspects of purchasing behavior.
+
+## 5.2. Behavioral variability and customer economic value
+
+Beyond demonstrating behavioral differentiation, the proposed representation also exhibits clear economic relevance. Customers exhibiting progressively higher levels of behavioral variability also generated progressively higher revenue, indicating that the identified behavioral segments correspond to meaningful differences in customer economic value. 
+
+One possible explanation is that greater behavioral variability reflects broader engagement with the retailer's online assortment. Customers who purchase more frequently, explore a wider range of products, and distribute their purchases more evenly are likely to interact with a larger portion of the retailer's digital assortment rather than repeatedly purchasing a limited set of items. Such behavioral patterns are consistent with greater opportunities for repeated transactions and cross-buying across the observed customer relationship, thereby contributing to higher cumulative revenue. This interpretation is consistent with previous research linking purchasing intensity and online purchase behavior to customer lifetime value (Kvíčala et al., 2026), while cross-buying across a broader range of products or categories has been associated with greater customer value and revenue contribution (Kumar et al., 2008).
+
+Importantly, the results suggest that customer economic value is associated not only with purchasing intensity but also with broader patterns of purchasing behavior captured by the proposed behavioral representation. The identified customer segments differ significantly across Frequency, Diversity, and Entropy, and these behavioral differences are accompanied by significant differences in observed customer revenue. Overall, the findings indicate that behavioral variability captures economically meaningful differences that cannot be fully inferred from purchasing intensity alone.
+
+## 5.3. The incremental value of Entropy
+
+The results further demonstrate the incremental behavioral contribution of Entropy within the proposed representation. Although the Frequency–Diversity representation was able to differentiate customers, incorporating Entropy substantially strengthened the association between behavioral segments and customer economic value. This finding suggests that behavioral dispersion represents an additional dimension of customer behavior rather than simply providing another measure of purchasing activity.
+
+A key reason for this improvement is that Frequency and Diversity primarily describe the magnitude and breadth of purchasing behavior, whereas Entropy captures its internal allocation structure. Entropy-based measures incorporate the relative distribution of observations across behavioral categories and therefore distinguish between concentrated and more evenly distributed behavioral patterns (Shannon, 1948; Guidotti et al., 2015). Customers may exhibit similar purchasing frequency and purchase a similar number of products while allocating their purchases across those products in fundamentally different ways. Because these differences are not reflected by Frequency or Diversity alone, customer representations based solely on these two descriptors may overlook meaningful behavioral heterogeneity.
+
+The present findings extend previous applications of entropy-based measures to customer transaction behavior (Guidotti et al., 2015) by demonstrating the incremental information provided by behavioral dispersion beyond purchasing breadth. While Diversity describes the scope of customers' purchasing portfolios, Entropy characterizes how purchasing activities are distributed within those portfolios. The improvement observed after incorporating Entropy therefore suggests that purchasing allocation constitutes a complementary source of behavioral information rather than a redundant extension of purchasing breadth.
+
+Collectively, these findings indicate that customer representations in electronic commerce should preserve not only purchasing intensity and purchasing breadth but also purchasing allocation. Behavioral variability therefore cannot be fully characterized by purchasing intensity and purchasing breadth alone. Incorporating behavioral dispersion enables customer representations to capture an additional structural dimension of purchasing behavior, providing a more complete yet still parsimonious representation of customer heterogeneity.
+
+## 5.4. Managerial implications
+### 5.4.1. A parsimonious approach to behavioral customer segmentation
+
+The proposed representation provides a practical basis for customer segmentation in electronic commerce by distinguishing customers according to differences in behavioral variability without requiring extensive feature engineering or high-dimensional customer representations. By relying on three behavioral descriptors derived directly from customer transaction histories, online retailers can organize customers according to purchasing intensity, portfolio breadth, and purchasing allocation while limiting the number of behavioral variables that must be constructed and maintained.
+
+An important practical advantage of this approach is its interpretability. The explicit behavioral meaning of each dimension allows customer differences to be interpreted directly in terms of purchasing frequency, portfolio breadth, and purchasing allocation. Consequently, segmentation results can be translated directly into interpretable behavioral customer profiles for customer targeting and personalization without requiring post-hoc interpretation of latent representational dimensions, addressing broader concerns regarding the interpretability of complex analytical models (Rudin, 2019).
+
+The representation also has relatively modest data and analytical requirements, making it suitable for practical deployment in electronic commerce environments. Frequency, Diversity, and Entropy can be computed directly from customer–product transaction histories routinely collected by electronic commerce platforms and do not require additional demographic information, browsing data, or complex representation-learning architectures. The proposed approach therefore provides online retailers with a practical segmentation framework that leverages existing transactional data while maintaining a parsimonious, interpretable, and easily deployable customer representation.
+
+### 5.4.2. Implications for CRM and personalization
+
+The proposed representation offers a diagnostic perspective for CRM and personalization in electronic commerce by distinguishing three complementary sources of customer behavioral variability: purchasing intensity, portfolio breadth, and purchasing allocation. Customers with similar levels of purchasing activity may nevertheless differ in the behavioral dimension underlying their purchasing patterns and therefore may require different CRM or personalization strategies.
+
+This distinction allows CRM actions to be aligned with the specific dimension in which customer behavior is limited. Low Frequency indicates limited purchasing intensity, low Diversity reflects restricted interaction with the retailer's assortment, and low Entropy indicates concentrated purchasing allocation. These patterns respectively point to different CRM priorities: encouraging repeat purchasing, expanding product recommendations and cross-selling opportunities, or examining whether concentrated purchasing allocation reflects stable product preferences or limited exploration of the retailer's online assortment.
+
+The representation may also support continuous behavioral monitoring at the dimension level. Changes in Diversity or Entropy may signal portfolio contraction or increasing purchasing concentration even when purchase frequency remains stable, allowing online retailers to detect behavioral changes that might otherwise remain unnoticed. Accordingly, the proposed representation shifts behavioral segmentation from describing customer activity levels toward identifying the specific structure of customer behavioral variability, providing a more targeted and behavior-specific basis for CRM, recommendation, and personalization strategies.
+
+### 5.4.3. Implications for representing customer behavioral variability
+
+The findings suggest that online retailers can evaluate customer representations by identifying which forms of customer behavioral variability remain unrepresented. Rather than continually expanding transactional feature sets whenever additional variables become available, analysts can evaluate whether newly introduced behavioral descriptors capture genuinely new sources of customer variability or merely duplicate information already contained in the existing representation.
+
+The comparison between the FD and FDE representations illustrates this issue. Frequency and Diversity captured differences in purchasing intensity and portfolio breadth but did not explicitly represent differences in purchasing allocation. As a result, customers with similar purchasing activity and portfolio breadth could remain behaviorally indistinguishable for downstream customer analytics tasks despite organizing their purchases differently. Incorporating Entropy addressed this representational gap and produced stronger differentiation in customer economic value.
+
+For online retailers, these findings provide a practical criterion for deciding whether additional behavioral descriptors are worth incorporating into customer representations. A new descriptor is most valuable when it captures a source of customer behavioral variability that existing descriptors do not preserve and leads to improved differentiation on managerially relevant outcomes. This dimension-oriented perspective encourages electronic commerce analysts to evaluate customer representations according to the complementary behavioral dimensions they preserve rather than simply the number of available behavioral variables. Such an approach can support more parsimonious, interpretable, and managerially useful customer analytics while avoiding unnecessary representational complexity.
+
+# 6. Limitations and future research
+
+Several limitations of this study provide opportunities for future research. First, the proposed representation was evaluated within a single online retail transaction context. Although the findings provide evidence that Frequency, Diversity, and Entropy preserve meaningful customer behavioral variability in this setting, the adequacy of these dimensions may depend on purchasing cycles, assortment structures, and transaction patterns. Future research should evaluate the representation across different retail settings, including grocery, subscription-based, and omnichannel environments, to examine the generalizability of the proposed three-dimensional representation.
+
+Second, Diversity and Entropy were operationalized at the individual product level. The behavioral variability captured by these descriptors may be sensitive to the granularity at which purchasing portfolios are defined. Representing purchases at the product, subcategory, or category level may produce different patterns of purchasing breadth and allocation. Future studies should therefore examine how product aggregation influences the proposed representation and determine the level of behavioral granularity at which customer variability is most meaningfully preserved.
+
+Third, the present study represents each customer using behavioral descriptors aggregated across the observed transaction period. This approach captures differences in behavioral variability across customers but does not account for changes in behavioral variability over time. Customers may experience portfolio expansion, portfolio contraction, or shifts in purchasing allocation while maintaining similar aggregate behavioral profiles. Future research could develop longitudinal or dynamic extensions of the proposed representation using temporal windows to examine the stability and evolution of Frequency, Diversity, and Entropy.
+
+Finally, managerial validation in this study focused on customer revenue as an economically relevant outcome. Although the results demonstrate a strong association between the proposed behavioral representation and observed customer revenue, revenue captures only one dimension of managerial relevance. Future research should evaluate whether the representation, and particularly the incremental information provided by Entropy, is associated with other customer outcomes such as retention, churn, customer lifetime value, cross-buying, and responsiveness to personalization. Such analyses would provide a broader assessment of the managerial information preserved by customer behavioral variability representations.
+
+# 7. Conclusion
+
+This study examined whether customer behavioral variability can be represented parsimoniously using three complementary behavioral descriptors: Frequency, Diversity, and Entropy. By capturing purchasing intensity, portfolio breadth, and purchasing allocation, respectively, the proposed representation preserved meaningful differences in customer purchasing behavior within a compact and interpretable analytical framework.
+
+The findings provide empirical support for a three-dimensional representation of customer behavioral variability and show that the behavioral differences it preserves correspond to substantial differences in observed customer revenue. Importantly, Entropy contributes information beyond Frequency and Diversity by capturing differences in purchasing allocation, substantially strengthening revenue differentiation across behavioral segments. Together, these results demonstrate both the representational adequacy and managerial relevance of representing customer variability through complementary dimensions of purchasing behavior.
+
+Overall, the study highlights the importance of representational complementarity in customer behavioral analytics. Meaningful customer variability may be preserved not by continuously expanding the number of behavioral descriptors, but by identifying and representing distinct sources of behavioral variation. The proposed Frequency–Diversity–Entropy representation demonstrates that purchasing intensity, portfolio breadth, and purchasing allocation together provide a parsimonious, interpretable, and managerially meaningful foundation for customer analytics in electronic commerce. More broadly, the findings suggest that future customer representations should be evaluated not only by their representational richness, but also by whether they preserve complementary behavioral dimensions that support meaningful managerial decision-making.
+
+**Declarations**
+Funding: No funding was received for conducting this study.
+Competing Interests: The author declares that there are no competing interests.
+
+\clearpage
+# References
+
+Alves Gomes, M., & Meisen, T. (2023). A review on customer segmentation methods for personalized customer targeting in e-commerce use cases. *Information Systems and e-Business Management, 21*, 527–570. https://doi.org/10.1007/s10257-023-00640-4
+
+Alves Gomes, M., Meisen, P., & Meisen, T. (2025). Efficient Personalization in E-Commerce: Leveraging Universal Customer Representations with Embeddings. *Journal of Theoretical and Applied Electronic Commerce Research, 20*(1), 12. https://doi.org/10.3390/jtaer20010012
+
+Barkan, O., & Koenigstein, N. (2016). Item2Vec: Neural item embedding for collaborative filtering. In *2016 IEEE 26th International Workshop on Machine Learning for Signal Processing (MLSP)* (pp. 1–6). IEEE. https://doi.org/10.1109/MLSP.2016.7738886
+
+Bengio, Y., Courville, A., & Vincent, P. (2013). Representation learning: A review and new perspectives. *IEEE Transactions on Pattern Analysis and Machine Intelligence, 35*(8), 1798–1828. https://doi.org/10.1109/TPAMI.2013.50
+
+Buckinx, W., & Van den Poel, D. (2005). Customer base analysis: Partial defection of behaviourally loyal clients in a non-contractual FMCG retail setting. *European Journal of Operational Research, 164*(1), 252–268. https://doi.org/10.1016/j.ejor.2003.12.010
+
+Chen, D. (2012). *Online Retail II* [Data set]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D
+
+Dunn, O. J. (1964). Multiple comparisons using rank sums. *Technometrics, 6*(3), 241–252. https://doi.org/10.1080/00401706.1964.10490181
+
+Erevelles, S., Fukawa, N., & Swayne, L. (2016). Big Data consumer analytics and the transformation of marketing. *Journal of Business Research, 69*(2), 897–904. https://doi.org/10.1016/j.jbusres.2015.07.001
+
+Fader, P. S., Hardie, B. G. S., & Lee, K. L. (2005). RFM and CLV: Using iso-value curves for customer base analysis. *Journal of Marketing Research, 42*(4), 415–430. https://doi.org/10.1509/jmkr.2005.42.4.415
+
+Guidotti, R., Coscia, M., Pedreschi, D., & Pennacchioli, D. (2015). Behavioral entropy and profitability in retail. In *2015 IEEE International Conference on Data Science and Advanced Analytics (DSAA)* (pp. 1–10). IEEE. https://doi.org/10.1109/DSAA.2015.7344821
+
+Hughes, A. M. (1994). *Strategic database marketing: The masterplan for starting and managing a profitable, customer-based marketing program*. Probus Publishing.
+
+Kruskal, W. H., & Wallis, W. A. (1952). Use of ranks in one-criterion variance analysis. *Journal of the American Statistical Association, 47*(260), 583–621. https://doi.org/10.1080/01621459.1952.10483441
+
+Kumar, V., George, M., & Pancras, J. (2008). Cross-buying in retailing: Drivers and consequences. *Journal of Retailing, 84*(1), 15–27. https://doi.org/10.1016/j.jretai.2008.01.007
+
+
+Kvíčala, D., Králová, M., & Suchánek, P. (2026). The impact of online purchase behaviour on customer lifetime value. *Journal of Marketing Analytics, 14*, 120–137. https://doi.org/10.1057/s41270-024-00328-9
+
+MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. In L. M. Le Cam & J. Neyman (Eds.), *Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability* (Vol. 1, pp. 281–297). University of California Press.
+
+Molnar, C. (2025). *Interpretable machine learning: A guide for making black box models explainable* (3rd ed.). Christoph Molnar. https://christophm.github.io/interpretable-ml-book/
+
+Netzer, O., Lattin, J. M., & Srinivasan, V. (2008). A hidden Markov model of customer relationship dynamics. *Marketing Science, 27*(2), 185–204. https://doi.org/10.1287/mksc.1070.0294
+
+Ozcan, T. (2026). Customer segmentation using an extended RFM model and clustering algorithms in e-commerce. *Journal of Theoretical and Applied Electronic Commerce Research, 21*(5), Article 142. https://doi.org/10.3390/jtaer21050142
+
+Park, S. H., & Han, S. P. (2013). From accuracy to diversity in product recommendations: Relationship between diversity and customer retention. *International Journal of Electronic Commerce, 18*(2), 51–72. https://doi.org/10.2753/JEC1086-4415180202
+
+Peker, S., & Kart, Ö. (2023). Transactional data-based customer segmentation applying CRISP-DM methodology: A systematic review. *Journal of Data, Information and Management, 5*, 1–21. https://doi.org/10.1007/s42488-023-00085-x
+
+Reinartz, W., Thomas, J. S., & Kumar, V. (2005). Balancing acquisition and retention resources to maximize customer profitability. *Journal of Marketing, 69*(1), 63–79. https://doi.org/10.1509/jmkg.72.3.63
+
+Rudin, C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. *Nature Machine Intelligence, 1*(5), 206–215. https://doi.org/10.1038/s42256-019-0048-x
+
+Salminen, J., Jung, S.-G., Chowdhury, S. A., Jansen, B. J., & Lee, J. (2023). Customer segmentation in the era of big data: Review of customer segmentation methods using user-generated data. *Journal of Business Research, 165*, 114102. https://doi.org/10.1016/j.jbusres.2023.114102
+
+Shannon, C. E. (1948). A mathematical theory of communication. *The Bell System Technical Journal, 27*(3), 379–423. https://doi.org/10.1002/j.1538-7305.1948.tb01338
+
+Theodorakopoulos, L., & Theodoropoulou, A. (2024). Leveraging big data analytics for understanding consumer behavior in digital marketing: A systematic review. *Human Behavior and Emerging Technologies, 2024*, Article 3641502. https://doi.org/10.1155/2024/3641502
+
+Thorndike, R. L. (1953). Who belongs in the family? *Psychometrika, 18*, 267–276. https://doi.org/10.1007/BF02289263
+
+Tomczak, M., & Tomczak, E. (2014). The need to report effect size estimates revisited: An overview of some recommended measures of effect size. *Trends in Sport Sciences, 21*(1), 19–25.
+
+Verhoef, P. C., Kooge, E., & Walk, N. (2021). *Creating value with data analytics in marketing: A practitioner's guide*. Routledge. https://doi.org/10.4324/9781003006355
+
+Wedel, M., & Kannan, P. K. (2016). Marketing analytics for data-rich environments. *Journal of Marketing, 80*(6), 97–121. https://doi.org/10.1509/jm.15.0413
