@@ -40,6 +40,7 @@ The results demonstrate that incorporating **Entropy** provides additional behav
     ├── results/
     └── quarto/
         └── manuscript.qmd
+        └── manuscript.pdf
 
 - **`data/`** — Dataset and instructions for obtaining and preparing the data.
 - **`code/`** — R scripts used to reproduce the empirical analysis.
@@ -119,9 +120,10 @@ These outputs are generated automatically by the corresponding R scripts.
 
 ## Manuscript
 
-The manuscript source is provided as a Quarto document in:
+The manuscript is available in the `quarto/` directory.
 
-    quarto/manuscript.qmd
+- **Source (Quarto):** `quarto/manuscript.qmd`
+- **PDF version:** `quarto/manuscript.pdf`
 
 The Quarto source contains the manuscript text, tables, and figures associated with the empirical analysis.
 
