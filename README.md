@@ -140,10 +140,8 @@ quarto render quarto/manuscript_source.qmd
 
 This command generates `manuscript_source.pdf` in the `quarto/` directory. The generated PDF is equivalent in content to the provided `manuscript.pdf`.
 
-## Citation
+## Manuscript Status
 
-If you use this repository or the proposed customer representation in your research, please cite:
+This repository accompanies a research manuscript currently under review. The manuscript and analysis materials are provided for research transparency and reproducibility.
 
-> Pham.C.H. *A Parsimonious Three-Dimensional Representation of Customer Behavioral Variability*.
-
-A formal citation and DOI will be added when available.
+Publication details and a DOI will be added when available.
