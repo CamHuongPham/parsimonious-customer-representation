@@ -24,6 +24,10 @@ Using the **Online Retail II** dataset, the proposed representation is evaluated
 
 The results demonstrate that incorporating **Entropy** provides additional behavioral information beyond purchasing intensity and portfolio breadth, leading to stronger differentiation of customer revenue across behavioral segments.
 
+## Research contribution
+
+The project proposes a parsimonious three-dimensional representation of customer behavioral variability using Frequency, Diversity, and Entropy, and evaluates whether the additional entropy dimension provides information beyond conventional Frequency–Diversity representations.
+
 ## Repository Structure
 
     parsimonious-customer-representation/
@@ -39,7 +43,7 @@ The results demonstrate that incorporating **Entropy** provides additional behav
     ├── figures/
     ├── results/
     └── quarto/
-        └── manuscript.qmd
+        └── manuscript_source.qmd
         └── manuscript.pdf
 
 - **`data/`** — Dataset and instructions for obtaining and preparing the data.
