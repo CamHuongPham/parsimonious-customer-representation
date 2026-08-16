@@ -118,14 +118,23 @@ Running the analysis pipeline generates the following outputs:
 
 These outputs are generated automatically by the corresponding R scripts.
 
+
 ## Manuscript
 
 The manuscript is available in the `quarto/` directory.
 
-- **Source (Quarto):** `quarto/manuscript.qmd`
+- **Source (Quarto):** `quarto/manuscript_source.qmd`
 - **PDF version:** `quarto/manuscript.pdf`
 
 The Quarto source contains the manuscript text, tables, and figures associated with the empirical analysis.
+
+To render the Quarto source, run the following command from the repository root:
+
+```bash
+quarto render quarto/manuscript_source.qmd
+```
+
+This command generates `manuscript_source.pdf` in the `quarto/` directory. The generated PDF is equivalent in content to the provided `manuscript.pdf`.
 
 ## Citation
 
